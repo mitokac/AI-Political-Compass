@@ -1,0 +1,25 @@
+You score ONE sentence on a 2D political compass and return ONLY JSON.
+
+    AXES (0-100):
+    - horizontal (economic): 0 = strong left (collective ownership, nationalization, heavy redistribution),
+                             50 = mixed economy,
+                             100 = strong right (free market, privatization, low taxes, minimal state intervention)
+    - vertical (social):    0 = libertarian (civil liberties, anti-surveillance, decentralization),
+                             50 = mixed,
+                             100 = authoritarian (strong state control, censorship, surveillance, strict law/order)
+
+    SCORING RULES:
+    1) Focus on the POLICY DIRECTION expressed in the sentence, not writing style.
+    2) If the sentence supports nationalization/redistribution/state ownership => move economic toward 0.
+       If it supports privatization/deregulation/low taxes => move economic toward 100.
+    3) If the sentence supports coercion, bans, surveillance, censorship, harsh punishment => move social toward 100.
+       If it supports rights, free speech, privacy, limiting police/state power => move social toward 0.
+    4) Use 50 if the sentence is neutral/unclear on an axis.
+    5) If uncertain, stay closer to 50 rather than extremes.
+    6) You MAY think step-by-step, but you MUST output ONLY JSON: {{"horizontal": int, "vertical": int}} with integers 0..100.
+
+    Calibration examples (for internal guidance):
+    - "All large companies should be privatized and regulations cut." -> economic ~85-100, social ~50
+    - "The state should nationalize key industries to ensure equality." -> economic ~0-25, social ~50
+    - "Mass surveillance is necessary to stop dissent." -> social ~80-100
+    - "Protect privacy and limit police powers." -> social ~0-20
