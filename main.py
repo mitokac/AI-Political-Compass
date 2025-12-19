@@ -1,4 +1,4 @@
-import json
+import json, os
 from llama_cpp import Llama, LlamaGrammar
 from pathlib import Path
 
@@ -58,14 +58,62 @@ def grading(sentence):
     punkt = json.loads(txt)
     return punkt
 
+def ui():
+
+    try:
+
+        size = os.get_terminal_size()
+        size_correction = round(size.columns/2)
+
+        width = size.columns - size_correction
+        height = round(width/2.4)
+        if height % 2 == 0:
+            height += 1
+
+        right_text = {
+            0: "AI Political Compass grader",
+            1: "by mitokac",
+            # 4: f"Wynik poziomy: {score['horizontal']}",
+            # 5: f"Wynik pionowy: {score['vertical']}"
+        }
+
+        print("┌" + "─" * width + "┐")
+
+        # Rysowanie środka
+        for i in range(height):
+
+
+            row = "│" + " " * (round(width/2)-1) + ":" + " " *  (round(width/2)-1) + "│"
+
+            if i == round(height/2):
+                row = "│" + "-" * width + "│"
+
+
+            # Sprawdzamy, czy dla tej linii (i) mamy przypisany tekst
+            # Jeśli tak, dodajemy numer i treść. Jeśli nie, zostawiamy puste.
+            if i in right_text:
+                text_side = f"{right_text[i]}"
+            else:
+                text_side = ""
+
+            print(f"{row}   {text_side}")
+
+        print("└" + "─" * width + "┘")
+
+
+    except OSError:
+        print("Use this in a terminal you stupid fuck")
+
+
+
 
 def main():
-    sentence = sentence_input()
-    score = grading(sentence)
+    # sentence = sentence_input()
+    # score = grading(sentence)
+    ui()
 
 
-
-    print(score["horizontal"], score["vertical"])
+    # print(score["horizontal"], score["vertical"])
 
 if __name__ == '__main__':
     main()
