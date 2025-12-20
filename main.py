@@ -47,7 +47,7 @@ def grading(sentence):
     system_prompt = load_system_prompt()
 
     resp = llm.create_chat_completion(
-        messages=[
+        messages=[ # type: ignore
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": sentence},
         ],
@@ -55,18 +55,16 @@ def grading(sentence):
         max_tokens=32,
         grammar=g,
     )
-    txt = resp["choices"][0]["message"]["content"]
-    punkt = json.loads(txt)
-    return punkt
+    txt = json.loads(resp["choices"][0]["message"]["content"])
+    return txt
 
 def ui(sentence, score):
 
     try:
 
         size = os.get_terminal_size()
-        size_correction = round(size.columns/2)
 
-        width = size.columns - size_correction
+        width = round(size.columns/2)
         height = round(width/2.4)
         if height % 2 == 0:
             height += 1
@@ -75,7 +73,7 @@ def ui(sentence, score):
         sentence_y = round(((100 - score['vertical']) / 100) * (height - 1))
 
         wrapped_sentence = textwrap.wrap(sentence, width-5)
-        sentencefinish = 4
+        sentence_finish = 4
 
         #text stuff
         right_text = {
@@ -86,11 +84,11 @@ def ui(sentence, score):
 
         for i in range(len(wrapped_sentence)):
             right_text[i+4] = wrapped_sentence[i]
-            sentencefinish+=1
+            sentence_finish+=1
 
-        right_text[sentencefinish+1] = f"Horizontal: {score['horizontal']}"
-        right_text[sentencefinish + 2] = f"Vertical: {score['vertical']}"
-        right_text[height-2] = "Vertical: Autoritarian ↑ --- ↓ Liberal"
+        right_text[sentence_finish+1] = f"Horizontal: {score['horizontal']}"
+        right_text[sentence_finish + 2] = f"Vertical: {score['vertical']}"
+        right_text[height-2] = "Vertical: Authoritarian ↑ --- ↓ Liberal"
         right_text[height-1] = "Horizontal: Left ← --- → Right"
 
 
