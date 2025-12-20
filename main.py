@@ -1,4 +1,4 @@
-import json, os
+import json, os, textwrap
 from llama_cpp import Llama, LlamaGrammar
 from pathlib import Path
 
@@ -58,7 +58,7 @@ def grading(sentence):
     punkt = json.loads(txt)
     return punkt
 
-def ui():
+def ui(sentence, score):
 
     try:
 
@@ -69,28 +69,44 @@ def ui():
         height = round(width/2.4)
         if height % 2 == 0:
             height += 1
+            
+        sentence_x = round(score['vertical']/(100/width))
+        sentence_y = round(score['vertical']/(100/width))
 
+        wrapped_sentence = textwrap.wrap(sentence, width-5)
+        sentencefinish = 4
+
+        #text stuff
         right_text = {
-            0: "AI Political Compass grader",
+            0: "AI Political Compass",
             1: "by mitokac",
-            # 4: f"Wynik poziomy: {score['horizontal']}",
-            # 5: f"Wynik pionowy: {score['vertical']}"
+            3: "Sentence:",
         }
 
+        for i in range(len(wrapped_sentence)):
+            right_text[i+4] = wrapped_sentence[i]
+            sentencefinish+=1
+
+        right_text[sentencefinish+1] = f"Horizontal: {score['horizontal']}"
+        right_text[sentencefinish + 2] = f"Vertical: {score['vertical']}"
+
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        #Drawing first row
         print("┌" + "─" * width + "┐")
 
-        # Rysowanie środka
+        # Drawing middle
         for i in range(height):
 
-
-            row = "│" + " " * (round(width/2)-1) + ":" + " " *  (round(width/2)-1) + "│"
-
             if i == round(height/2):
+
                 row = "│" + "-" * width + "│"
+            else:
+                row = "│" + " " * (round(width/2)-1) + ":" + " " *  (round(width/2)-1) + "│"
 
 
-            # Sprawdzamy, czy dla tej linii (i) mamy przypisany tekst
-            # Jeśli tak, dodajemy numer i treść. Jeśli nie, zostawiamy puste.
+
+            #check if text
             if i in right_text:
                 text_side = f"{right_text[i]}"
             else:
@@ -98,6 +114,7 @@ def ui():
 
             print(f"{row}   {text_side}")
 
+        #drawing last row
         print("└" + "─" * width + "┘")
 
 
@@ -108,9 +125,10 @@ def ui():
 
 
 def main():
-    # sentence = sentence_input()
+    sentence = sentence_input()
     # score = grading(sentence)
-    ui()
+    score = {"horizontal": 90, "vertical": 10}
+    ui(sentence, score)
 
 
     # print(score["horizontal"], score["vertical"])
