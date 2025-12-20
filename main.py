@@ -4,9 +4,10 @@ from pathlib import Path
 
 def sentence_input():
     print("Input sentence:")
-    #sentence = input()
-    
-    sentence = "People should be allowed to opt out of state systems (schooling, pensions) and choose privately."
+    sentence = input()
+
+    #example sentence for testing
+    # sentence = "People should be allowed to opt out of state systems (schooling, pensions) and choose privately."
     return sentence
 
 
@@ -35,10 +36,10 @@ def grading(sentence):
 
     llm = Llama(
             model_path = model_path,
-            verbose=False
+            verbose=False,
           # n_gpu_layers=-1, # Uncomment to use GPU acceleration
           # seed=1337, # Uncomment to set a specific seed
-          # n_ctx=2048, # Uncomment to increase the context window
+            n_ctx=2048, # Uncomment to increase the context window
 
 
     )
@@ -69,9 +70,9 @@ def ui(sentence, score):
         height = round(width/2.4)
         if height % 2 == 0:
             height += 1
-            
-        sentence_x = round(score['vertical']/(100/width))
-        sentence_y = round(score['vertical']/(100/width))
+
+        sentence_x = round((score['horizontal'] / 100) * (width - 1))
+        sentence_y = round(((100 - score['vertical']) / 100) * (height - 1))
 
         wrapped_sentence = textwrap.wrap(sentence, width-5)
         sentencefinish = 4
@@ -89,6 +90,9 @@ def ui(sentence, score):
 
         right_text[sentencefinish+1] = f"Horizontal: {score['horizontal']}"
         right_text[sentencefinish + 2] = f"Vertical: {score['vertical']}"
+        right_text[height-2] = "Vertical: Autoritarian ↑ --- ↓ Liberal"
+        right_text[height-1] = "Horizontal: Left ← --- → Right"
+
 
         os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -97,14 +101,22 @@ def ui(sentence, score):
 
         # Drawing middle
         for i in range(height):
+            row_list = []
+            for j in range(width):
+                # X
+                if i == sentence_y and j == sentence_x:
+                    row_list.append("X")
+                # 2. -
+                elif i == round(height / 2):
+                    row_list.append("-")
+                # 3. :
+                elif j == round(width / 2) - 1:
+                    row_list.append(":")
+                # 4.
+                else:
+                    row_list.append(" ")
 
-            if i == round(height/2):
-
-                row = "│" + "-" * width + "│"
-            else:
-                row = "│" + " " * (round(width/2)-1) + ":" + " " *  (round(width/2)-1) + "│"
-
-
+            row = "│" + "".join(row_list) + "│"
 
             #check if text
             if i in right_text:
@@ -126,12 +138,10 @@ def ui(sentence, score):
 
 def main():
     sentence = sentence_input()
-    # score = grading(sentence)
-    score = {"horizontal": 90, "vertical": 10}
+    score = grading(sentence)
+    #example score for testing purposes
+    # score = {"horizontal": 90, "vertical": 10}
     ui(sentence, score)
-
-
-    # print(score["horizontal"], score["vertical"])
 
 if __name__ == '__main__':
     main()
